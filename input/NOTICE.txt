@@ -1,0 +1,18 @@
+Where these prices come from
+
+Each case file <id>.in holds, for every market of Polymarket's event "Next CEO of NVIDIA?" (slug next-ceo-of-nvidia,
+https://polymarket.com/event/next-ceo-of-nvidia) that had traded by the case's checkpoint `at`, the market's Yes price
+on a 1-minute UTC grid, for the 72 hours ending at `at` (or from the market's first minute, when it started later).
+
+The prices are Polymarket's public price history, recorded by make.fun's recorder (collector/polymarket-forecast in
+the make.fun repository): no key or account is needed to fetch them again.
+
+  GET https://clob.polymarket.com/prices-history?market=<yes_token>&startTs=<unix s>&endTs=<unix s>&fidelity=1
+
+answers {"history":[{"t":<unix seconds>,"p":<price>}, ...]}, about one point a minute, p the midpoint of the Yes
+token's order book (a window is at most 15 days; Polymarket may stop serving 1-minute points for old windows). A
+case's minute m holds the LAST point with t <= m (m the minute's first second), carried forward through minutes with
+no point of their own; a market's grid starts at the first whole minute at or after its first point. Prices are as
+Polymarket gives them, unrounded. The markets (each one's conditionId, name, slug and Yes token) are the event's
+markets that were trading when the contest's universe was frozen, from
+GET https://gamma-api.polymarket.com/events/slug/next-ceo-of-nvidia.
